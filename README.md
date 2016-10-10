@@ -50,19 +50,62 @@ Cherry-pick a single file from another commit
 
 `git show [COMMIT_ID]:[PATH_TO_FILE] > [PATH_TO_FILE]`
 
+### Recovering a single file from stash
+You even can take a single file from the stash. stash@{0} represent the latest stashed commit, you can change the 0 for any other number to control which stash you want to use.
+
+`git show stash@{0}:<full filename>` Show a single file from stash
+
+`git checkout stash@{0} -- <filename>` Get a single file from a certain stash
+
+`git show stash@{0}:<full filename>  >  <newfile>` Get a single file from stash to a different filename
+
+A stash is represented as a commit whose tree records the state of the working directory, and its first parent is the commit at HEAD when the stash was created. stash@{0}^1 shortcut means first parent of given stash. 
+
+`git diff stash@{0}^1 stash@{0} -- <filename>` Show diff of file ([Further readhing][stash-get-file])
+
+
+### Recover DELETED stash
+This really saved my life once. In one sprint I left some fixing half-developed, so I stashed changes to continue later. I didn't have the chance to come back to this work until one month later. In the meantime I was cleaning up my repo, I forgot this precious stashed code, and I deleted that stash. It took my a while to realize of this (I knew I did some changes in the code, but I couldn't find it). Fortunately I found [this answer in SO solving my problem][[stash-restore]].
+
+First you would like to find where is your stash. This command will show you all the commits at the tips of your commit graph *which are no longer referenced from any branch or tag* – every lost commit, including every stash commit you’ve ever created, will be somewhere in that graph.
+
+`git fsck --no-reflog | awk '/dangling commit/ {print $3}'`
+
+The easiest way to find the stash commit you want is probably to pass that list to gitk:
+
+`gitk --all $( git fsck --no-reflog | awk '/dangling commit/ {print $3}' )`
+
+To spot stash commits, look for commit messages of this form:
+
+`WIP on somebranch: commithash Some old commit message`
+
+`git stash apply $stash_commithash`
+
+## Alias
+Get all defined alias
+
+`git config --get-regexp alias`
+
+Create new alias
+`git config --global alias.COMMAND {code triggered by that command, between quotes if it has spaces}`
+
+
+git config --global alias.lga "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+
+ git config --global alias.lga "log --branches --tags --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
 
 ## Other
 Change branch name:
 `git branch -m newBranchName`
 
 
-## Alias
-Get all alias
-`git config --get-regexp alias`
 
 
 [itbwtcl]: http://www.cryptonomicon.com/beginning.html
 [gitcommit]: http://chris.beams.io/posts/git-commit/
 [headsdiff]: http://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git
 [change-parents]: http://stackoverflow.com/questions/3810348/setting-git-parent-pointer-to-a-different-parent
-[stash-recover]: http://stackoverflow.com/a/1105666/1516973
+[stash-get-file]: http://stackoverflow.com/a/1105666/1516973
+[stash-restore]: http://stackoverflow.com/a/91795/1516973
