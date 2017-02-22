@@ -6,6 +6,9 @@ Git is an amazing tool, really powerful, but a bit complex as well. Many people 
 
 Each time I do something I don't like on a repository, I look for some solution, because I know you always will find a fix for almost any mess you'd done on git.
 
+## Extra info
+
+[Difference between HEAD^n and HEAD~n][headsdiff]
 
 ## How to write a commit message
 This is not a real trick involving commands, but is one of the most important things I've learned of Git: *commit messages matter*. I encourage you to [read this amazing article][gitcommit] explaining why you should really care about it and give some tips to mastering commit messages.
@@ -20,34 +23,36 @@ Modify last commit message:
 
 Forgot to add some files to last commit
 
-* `git add forgotten_files`
+* `git add FILENAME` (repeat as needed)
 * `git commit --amend` Will prompt editor with the old message to have a chance to rewrite.
 * `git commit --amend -C HEAD` Was last message right? Reuse it and not show editor.
 * `git commit --amend --no-edit` Another way to not prompt editor an reuse last message.
 
-Modify n last commit messages (n = number of commits to change)
+Modify **n** last commit messages (n = number of commits to change). Also, if you know the number of the eldest commit to be modified, you can point to its parent:
 
-1. `git rebase -i HEAD~n` [Difference between HEAD^n and HEAD~n][headsdiff]
+1. `git rebase -i HEAD~n` or simply `git rebase -i COMMIT_ID `
   * Editor will open. Write `reword` in the commits you want to modify their messages, and let `pick` in the ones that are ok.
 2. For each commit with 'reword', editor will be opened to let you change the commit message.
 
-Modify n last commits  
+Modify **n** last commits  
 
-1. `git rebase -i HEAD~n` [Difference between HEAD^n and HEAD~n][headsdiff]
+1. `git rebase -i HEAD~n` also if you know the first commit `git rebase -i COMMIT_ID`
   * Editor will open. Write `edit` in the commits you want to modify, and let `pick` in the ones that are ok.
-2. Do whatever changes you want and `git add changed_files` 
+2. Do whatever changes you want and `git add FILENAME` (repeat as needed)
 3. `git commit --amend` 
 4. `git rebase --continue`
 5. Repeat 2,3,4 for each wommit with `edit`.
 
 Change branch's parent
+
 * `git rebase --onto <new-parent> <old-parent>` ([Further reading][change-parents])
 
 Rename local branch name:
+
 * `git branch -m newBranchName`
 
 ## Recover files
-Delete last commit and recover the modified files. Sometimes I do temporal commits instead of stashing, or maybe you didn't want to change some files, or you want to split a big commit in some smaller chunks.
+Delete last commit and recover the modified files. Sometimes you can do temporal commits instead of stashing (which ussually is safer), or maybe you didn't want to change some files, or you want to split a big commit into some smaller chunks.
 
 * `git reset --soft HEAD^`
 
@@ -68,7 +73,7 @@ If first you would like to check the changes you did on that file, you should re
 
 
 ### Recover DELETED stash
-This really saved my life once. In one sprint I left some fixing half-developed, so I stashed changes to continue later. I didn't have the chance to come back to this work until one month later. In the meantime I was cleaning up my repo, I forgot this precious stashed code, and I deleted that stash. It took me a while to realize this (I knew I had done some changes in the code, but I couldn't notice the changed code; then I remembered I had stashed them and removed the stash). Fortunately I found [this answer in SO solving my problem][[stash-restore]].
+This really saved my life once. In one sprint I left some fixing half-developed, so I stashed changes to continue later. I didn't have the chance to come back to this work until one month later. In the meantime I was cleaning up my repo, I forgot this precious stashed code, and I deleted that stash. It took me a while to realize this (I knew I had done some changes in the code, but I couldn't notice the changed code; then I remembered I had stashed them and removed the stash). Fortunately I found [this answer in SO solving my problem][stash-restore], which I summarize here.
 
 First you would like to find where is your stash. This command will show you all the commits at the tips of your commit graph *which are no longer referenced from any branch or tag* – every lost commit, including every stash commit you’ve ever created, will be somewhere in that graph.
 
@@ -88,12 +93,28 @@ Get all defined alias
 * `git config --get-regexp alias`
 
 Create new alias
+
 * `git config --global alias.COMMAND {code triggered by that command, between quotes if it has spaces}`
-* For example, creation of comand "git lg" to show a fancy log.
-  * `git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"`
+
+	For example, creation of comand "git lg" to show a fancy log.
+
+	* `git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"`
 
 
 ## Other
+
+How to know the lattest commit commit changing a certain file?
+
+* `git log -p [--follow] [-1] FILENAME`
+
+Display all the files changed on a commit:
+
+* `git show --pretty="" --name-only COMMIT_HASH`
+
+While doing a merge, you've applied some wrong changes in a certain file and you want to start again, **but just for this file**. This command will revoke fixed conflicts of a single file:
+
+* `git checkout -m FILENAME`
+
 
 
 
