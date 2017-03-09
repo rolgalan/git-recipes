@@ -6,7 +6,7 @@ Git is an amazing tool, really powerful, but a bit complex as well. Many people 
 
 Each time I do something I don't like on a repository, I look for some solution, because I know you always will find a fix for almost any mess you'd done on git.
 
-## Extra info
+## Basic Concepts
 
 [Difference between HEAD^n and HEAD~n][headsdiff]
 
@@ -14,6 +14,16 @@ Each time I do something I don't like on a repository, I look for some solution,
 This is not a real trick involving commands, but is one of the most important things I've learned of Git: *commit messages matter*. I encourage you to [read this amazing article][gitcommit] explaining why you should really care about it and give some tips to mastering commit messages.
 
 IMHO, git is not only a versioning tool, but a really good documentation on the project. While commenting a method explain how this method works, having a look to the repository history may help a new developer to understand how things are done. Adding a new feature, implementing a new request, fixing a bug... the whole process of developing these things could be better understood taking a look over the repository history. How your code change, tells a story. And good commit messages are the best narrator to deeply understand it and place the reader on the right context.
+
+## Retrieving info
+
+How to know the lattest commit commit changing a certain file?
+
+* `git log -p [--follow] [-1] FILENAME`
+
+Display all the files changed on a commit:
+
+* `git show --pretty="" --name-only COMMIT_HASH`
 
 ## Rewritting history
 Modify last commit message:
@@ -51,7 +61,7 @@ Rename local branch name:
 
 * `git branch -m newBranchName`
 
-## Recover files
+## Recovering files
 Delete last commit and recover the modified files. Sometimes you can do temporal commits instead of stashing (which ussually is safer), or maybe you didn't want to change some files, or you want to split a big commit into some smaller chunks.
 
 * `git reset --soft HEAD^`
@@ -102,14 +112,6 @@ Create new alias
 
 
 ## Other
-
-How to know the lattest commit commit changing a certain file?
-
-* `git log -p [--follow] [-1] FILENAME`
-
-Display all the files changed on a commit:
-
-* `git show --pretty="" --name-only COMMIT_HASH`
 
 While doing a merge, you've applied some wrong changes in a certain file and you want to start again, **but just for this file**. This command will revoke fixed conflicts of a single file:
 
