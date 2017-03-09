@@ -2,41 +2,52 @@
 Useful git tricks I've learnt using Git that might save your life some time.
 
 ## Introduction
-Git is an amazing tool, really powerful, but a bit complex as well. Many people I know are sticked to a [stupid interface][itbwtcl] where the options are nothing more than commit/checkout/push/pull/stash. Most of them get really embarrassed anytime something unexpected happens, because they're not aware of all the git possibilities.
+Git is an amazing tool, really powerful, but quite complex as well. Many people I know are sticked to a [stupid interface][itbwtcl] where the options are no more than *commit/checkout/fetch/push/pull/stash*. Most of them get really embarrassed anytime something unexpected happens, because they're not aware of all the git possibilities.
 
-Each time I do something I don't like on a repository, I look for some solution, because I know you always will find a fix for almost any mess you'd done on git.
+Each time I do something I don't like, I look for some solution, because you always will find a fix for almost any mess you'd done on git.
 
 ## Basic Concepts
 
 [Difference between HEAD^n and HEAD~n][headsdiff]
 
 ## How to write a commit message
-This is not a real trick involving commands, but is one of the most important things I've learned of Git: *commit messages matter*. I encourage you to [read this amazing article][gitcommit] explaining why you should really care about it and give some tips to mastering commit messages.
+This is not a real trick involving commands, but is one of the most important things I've learned of Git: **commit messages matter**. I encourage you to [read this amazing article][gitcommit] explaining why you should really care about it and give some tips to mastering commit messages.
 
-IMHO, git is not only a versioning tool, but a really good documentation on the project. While commenting a method explain how this method works, having a look to the repository history may help a new developer to understand how things are done. Adding a new feature, implementing a new request, fixing a bug... the whole process of developing these things could be better understood taking a look over the repository history. How your code change, tells a story. And good commit messages are the best narrator to deeply understand it and place the reader on the right context.
+IMHO, git is not only a versioning tool, but a really good documentation on the project. While commenting a method explain how this method works, having a look to the repository history may help a new developer to understand how things are done. Adding a new feature, implementing a new request, fixing a bug... the whole process of developing these things could be better understood taking a look over the repository history. **How your code change, tells a story**. And good commit messages are the best narrator to deeply understand it and place the reader on the right context.
 
 ## Retrieving info
 
-How to know the lattest commit commit changing a certain file?
+Get a list with the historic of commits modifiying a file (first line, the newest commit):
+
+* `git rev-list --pretty=oneline HEAD FILENAME`
+
+Displays a detailed diff log with the modifications in each commit for a certain file. Notice this is the expanded information of the list displayed with the previous command.
 
 * `git log -p [--follow] [-1] FILENAME`
 
-Display all the files changed on a commit:
+Display all the files changed on a commit (both commands prints the same):
 
 * `git show --pretty="" --name-only COMMIT_HASH`
+* `git diff-tree --no-commit-id --name-only -r COMMIT_HASH`
+
+In which commit some *source code* was introduced?
+
+ * `git log --pretty=oneline -S "CODE_STRING_TO_SEARCH" --source --all`
+ 
+     If you need to search with a regular expresion change `-S` by `-G`.
 
 ## Rewritting history
 Modify last commit message:
 
 * `git commit --ammend -m "New fancy message"`
-* `git commit --ammend` Will prompt editor with the old message to modify.
+* `git commit --ammend` Opens editor with the old message for modifying.
 
-Forgot to add some files to last commit
+Forgot to add some files to last commit? Just add them now and ammend it!:
 
-* `git add FILENAME` (repeat as needed)
-* `git commit --amend` Will prompt editor with the old message to have a chance to rewrite.
-* `git commit --amend -C HEAD` Was last message right? Reuse it and not show editor.
-* `git commit --amend --no-edit` Another way to not prompt editor an reuse last message.
+* First, add the files `git add FILENAME`, then different options:
+ * `git commit --amend` Opens editor with the old message to rewrite.
+ * `git commit --amend -C HEAD` Don't open the editor and reuse last message.
+ * `git commit --amend --no-edit` Another way to reuse last commit message.
 
 Modify **n** last commit messages (n = number of commits to change). Also, if you know the number of the eldest commit to be modified, you can point to its parent:
 
@@ -98,17 +109,18 @@ The easiest way to find the stash commit you want is probably to pass that list 
 2. `git stash apply $stash_commithash`
 
 ## Alias
-Get all defined alias
+Get all alias already defined
 
 * `git config --get-regexp alias`
 
-Create new alias
+Create new alias named NAME. The CODE triggered by that command, has to be between quotes if it has spaces (which would happen possibly in all alias you would create). To use it after created, just type `git NAME`.
 
-* `git config --global alias.COMMAND {code triggered by that command, between quotes if it has spaces}`
+* `git config --global alias.NAME "CODE"`
 
-	For example, creation of comand "git lg" to show a fancy log.
+	For example, creation of comand to display files added/modified on a commit.
 
-	* `git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"`
+	* `git config --global alias.whatadded "show --pretty="" --name-only"`
+	* And to use it: `git whatadded COMMIT`
 
 
 ## Other
